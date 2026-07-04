@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 // review URL. This is the same sanctioned metadata social previews use —
 // not article scraping. Used by the /admin form to pre-fill fields.
 export async function GET(request: NextRequest) {
-  if (process.env.VERCEL) {
+  // Local-only: also reject anything arriving through a tunnel/proxy
+  const forwarded =
+    request.headers.get("x-forwarded-for") ?? request.headers.get("cf-connecting-ip");
+  if (process.env.VERCEL || forwarded) {
     return NextResponse.json({ error: "Admin tools are local-only" }, { status: 403 });
   }
   const url = request.nextUrl.searchParams.get("url");

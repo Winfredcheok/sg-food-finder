@@ -60,17 +60,26 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       distanceKm: location ? haversineKm(location.lat, location.lng, e.lat, e.lng) : null,
     }));
 
-    const q = query.trim().toLowerCase();
-    const filtered = withDistance.filter(
-      (e) =>
-        (selectedReviewers.size === 0 || selectedReviewers.has(e.reviewerId)) &&
-        (selectedCuisines.size === 0 || selectedCuisines.has(e.cuisineType)) &&
-        (selectedRegions.size === 0 || selectedRegions.has(regionOf(e.lat, e.lng))) &&
-        (q === "" ||
-          [e.restaurantName, e.dishName, e.address, e.note ?? ""].some((f) =>
-            f.toLowerCase().includes(q)
-          ))
-    );
+    // Token search: every word must appear somewhere in the entry, so
+    // "chicken rice" matches Hainanese Chicken Rice regardless of word order.
+    const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const filtered = withDistance.filter((e) => {
+      if (selectedReviewers.size > 0 && !selectedReviewers.has(e.reviewerId)) return false;
+      if (selectedCuisines.size > 0 && !selectedCuisines.has(e.cuisineType)) return false;
+      if (selectedRegions.size > 0 && !selectedRegions.has(regionOf(e.lat, e.lng))) return false;
+      if (tokens.length === 0) return true;
+      const haystack = [
+        e.restaurantName,
+        e.dishName,
+        e.address,
+        e.note ?? "",
+        e.cuisineType,
+        reviewersById.get(e.reviewerId)?.name ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return tokens.every((t) => haystack.includes(t));
+    });
 
     if (sortMode === "distance" && location) {
       filtered.sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0));
@@ -80,7 +89,7 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       );
     }
     return filtered;
-  }, [entries, location, selectedReviewers, selectedCuisines, selectedRegions, sortMode, query]);
+  }, [entries, location, selectedReviewers, selectedCuisines, selectedRegions, sortMode, query, reviewersById]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -88,7 +97,7 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search dish, stall, or area — e.g. laksa, Maxwell…"
+        placeholder="Search anything — chicken rice, laksa, Maxwell, Michelin…"
         className="w-full rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm text-neutral-900 outline-none focus:border-red-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 sm:max-w-md"
       />
       <FilterBar

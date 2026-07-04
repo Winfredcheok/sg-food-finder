@@ -20,7 +20,11 @@ function slugify(s: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  if (process.env.VERCEL) {
+  // Local-only: also reject anything arriving through a tunnel/proxy
+  // (forwarded requests carry x-forwarded-for / cf-connecting-ip headers).
+  const forwarded =
+    request.headers.get("x-forwarded-for") ?? request.headers.get("cf-connecting-ip");
+  if (process.env.VERCEL || forwarded) {
     return NextResponse.json({ error: "Admin tools are local-only" }, { status: 403 });
   }
 
