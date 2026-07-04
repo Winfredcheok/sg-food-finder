@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import type { FoodEntry, Reviewer, SortMode, UserLocation, ViewMode } from "@/lib/types";
 import { haversineKm } from "@/lib/geo";
+import { regionOf } from "@/lib/region";
 import LocationBar from "./LocationBar";
 import FilterBar from "./FilterBar";
 import EntryCard from "./EntryCard";
@@ -27,6 +28,7 @@ export default function FoodFinder({ entries, reviewers }: Props) {
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [selectedReviewers, setSelectedReviewers] = useState<Set<string>>(new Set());
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
+  const [selectedRegions, setSelectedRegions] = useState<Set<string>>(new Set());
   const [sortMode, setSortMode] = useState<SortMode>("recent");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [query, setQuery] = useState("");
@@ -63,6 +65,7 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       (e) =>
         (selectedReviewers.size === 0 || selectedReviewers.has(e.reviewerId)) &&
         (selectedCuisines.size === 0 || selectedCuisines.has(e.cuisineType)) &&
+        (selectedRegions.size === 0 || selectedRegions.has(regionOf(e.lat, e.lng))) &&
         (q === "" ||
           [e.restaurantName, e.dishName, e.address, e.note ?? ""].some((f) =>
             f.toLowerCase().includes(q)
@@ -77,7 +80,7 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       );
     }
     return filtered;
-  }, [entries, location, selectedReviewers, selectedCuisines, sortMode, query]);
+  }, [entries, location, selectedReviewers, selectedCuisines, selectedRegions, sortMode, query]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -93,11 +96,13 @@ export default function FoodFinder({ entries, reviewers }: Props) {
         cuisines={cuisines}
         selectedReviewers={selectedReviewers}
         selectedCuisines={selectedCuisines}
+        selectedRegions={selectedRegions}
         sortMode={sortMode}
         viewMode={viewMode}
         hasLocation={location !== null}
         onToggleReviewer={(id) => setSelectedReviewers((s) => toggle(s, id))}
         onToggleCuisine={(c) => setSelectedCuisines((s) => toggle(s, c))}
+        onToggleRegion={(r) => setSelectedRegions((s) => toggle(s, r))}
         onSortChange={setSortMode}
         onViewChange={setViewMode}
       />

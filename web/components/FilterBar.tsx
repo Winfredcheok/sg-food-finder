@@ -1,17 +1,20 @@
 "use client";
 
 import type { Reviewer, SortMode, ViewMode } from "@/lib/types";
+import { REGIONS } from "@/lib/region";
 
 interface Props {
   reviewers: Reviewer[];
   cuisines: string[];
   selectedReviewers: Set<string>;
   selectedCuisines: Set<string>;
+  selectedRegions: Set<string>;
   sortMode: SortMode;
   viewMode: ViewMode;
   hasLocation: boolean;
   onToggleReviewer: (id: string) => void;
   onToggleCuisine: (cuisine: string) => void;
+  onToggleRegion: (region: string) => void;
   onSortChange: (mode: SortMode) => void;
   onViewChange: (mode: ViewMode) => void;
 }
@@ -44,11 +47,13 @@ export default function FilterBar({
   cuisines,
   selectedReviewers,
   selectedCuisines,
+  selectedRegions,
   sortMode,
   viewMode,
   hasLocation,
   onToggleReviewer,
   onToggleCuisine,
+  onToggleRegion,
   onSortChange,
   onViewChange,
 }: Props) {
@@ -80,6 +85,16 @@ export default function FilterBar({
             onClick={() => onToggleCuisine(c)}
           >
             {c}
+          </Chip>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          Region
+        </span>
+        {REGIONS.map((r) => (
+          <Chip key={r} active={selectedRegions.has(r)} onClick={() => onToggleRegion(r)}>
+            {r}
           </Chip>
         ))}
       </div>
