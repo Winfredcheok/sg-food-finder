@@ -29,6 +29,7 @@ export default function FoodFinder({ entries, reviewers }: Props) {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [sortMode, setSortMode] = useState<SortMode>("recent");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [query, setQuery] = useState("");
 
   const reviewersById = useMemo(
     () => new Map(reviewers.map((r) => [r.id, r])),
@@ -57,10 +58,15 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       distanceKm: location ? haversineKm(location.lat, location.lng, e.lat, e.lng) : null,
     }));
 
+    const q = query.trim().toLowerCase();
     const filtered = withDistance.filter(
       (e) =>
         (selectedReviewers.size === 0 || selectedReviewers.has(e.reviewerId)) &&
-        (selectedCuisines.size === 0 || selectedCuisines.has(e.cuisineType))
+        (selectedCuisines.size === 0 || selectedCuisines.has(e.cuisineType)) &&
+        (q === "" ||
+          [e.restaurantName, e.dishName, e.address, e.note ?? ""].some((f) =>
+            f.toLowerCase().includes(q)
+          ))
     );
 
     if (sortMode === "distance" && location) {
@@ -71,11 +77,17 @@ export default function FoodFinder({ entries, reviewers }: Props) {
       );
     }
     return filtered;
-  }, [entries, location, selectedReviewers, selectedCuisines, sortMode]);
+  }, [entries, location, selectedReviewers, selectedCuisines, sortMode, query]);
 
   return (
     <div className="flex flex-col gap-5">
       <LocationBar location={location} onLocationChange={handleLocationChange} />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search dish, stall, or area — e.g. laksa, Maxwell…"
+        className="w-full rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm text-neutral-900 outline-none focus:border-red-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 sm:max-w-md"
+      />
       <FilterBar
         reviewers={reviewers}
         cuisines={cuisines}
