@@ -8,6 +8,8 @@ const CUISINE_STYLES: Record<string, { emoji: string; gradient: string }> = {
   Malay: { emoji: "🍛", gradient: "from-emerald-400 to-teal-600" },
   Desserts: { emoji: "🍧", gradient: "from-pink-400 to-fuchsia-500" },
   Cafe: { emoji: "☕", gradient: "from-stone-400 to-amber-700" },
+  Indian: { emoji: "🫓", gradient: "from-yellow-400 to-orange-500" },
+  Western: { emoji: "🥩", gradient: "from-rose-400 to-red-700" },
 };
 
 const DEFAULT_STYLE = { emoji: "🍽️", gradient: "from-slate-400 to-slate-600" };
