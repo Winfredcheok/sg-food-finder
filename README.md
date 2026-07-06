@@ -1,5 +1,10 @@
 # SG Food Finder
 
+**Live site:** https://sg-food-finder.vercel.app
+(Deployed via Vercel CLI from `web/` — after changing code or data, redeploy with
+`npx vercel --prod`. Behind the ByteDance corp proxy, first run
+`export NODE_EXTRA_CA_CERTS="$HOME/.local/corp-ca.pem"` or Node can't reach Vercel.)
+
 A curated aggregator of food recommendations from Singapore's best-known food
 reviewers. Users share their location (browser geolocation or postal code) and
 see famous, reviewed food spots near them — filterable by reviewer and cuisine,
