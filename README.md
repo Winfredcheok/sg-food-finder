@@ -42,10 +42,11 @@ npm run build && npm start   # production
   API geocodes postal codes/addresses without an API key — used both at
   curation time (`/api/geocode` + the scripts) and for user postal-code lookup.
 - **Map is free**: Leaflet + OpenStreetMap tiles, no key needed.
-- **Photos are pending**: entry cards show cuisine-based placeholders until a
-  Google Cloud key is available; then swap in Places API photos via each
-  entry's `googlePlaceId` — and **switch the map to Google Maps JS at the same
-  time** (Google's ToS disallows showing Places content on a non-Google map).
+- **Photos**: each entry carries a Google Places photo URL (+ author
+  attribution), resolved once at curation time by `scripts`-style enrichment —
+  visitors trigger zero Places API calls. The map is Google Maps JS when
+  `NEXT_PUBLIC_GOOGLE_MAPS_KEY` is set (required by Google ToS alongside
+  Places content), with a Leaflet/OSM fallback for keyless local dev.
 - **Distance** is client-side Haversine — fine at this scale (see context.md
   §10 for the scale-up path).
 

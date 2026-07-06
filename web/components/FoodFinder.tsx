@@ -9,15 +9,19 @@ import LocationBar from "./LocationBar";
 import FilterBar from "./FilterBar";
 import EntryCard from "./EntryCard";
 
-// Leaflet touches `window` at import time, so the map can only render client-side
-const MapView = dynamic(() => import("./MapView"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-[70vh] items-center justify-center rounded-2xl border border-neutral-200 text-neutral-500 dark:border-neutral-800">
-      Loading map…
-    </div>
-  ),
-});
+const mapLoading = () => (
+  <div className="flex h-[70vh] items-center justify-center rounded-2xl border border-neutral-200 text-neutral-500 dark:border-neutral-800">
+    Loading map…
+  </div>
+);
+
+// Google Maps when a key is configured (required by Google ToS when showing
+// Places photos); Leaflet/OSM fallback for keyless local development.
+// Both touch `window`, so they only render client-side.
+const HAS_GOOGLE_KEY = Boolean(process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY);
+const MapView = HAS_GOOGLE_KEY
+  ? dynamic(() => import("./GoogleMapView"), { ssr: false, loading: mapLoading })
+  : dynamic(() => import("./MapView"), { ssr: false, loading: mapLoading });
 
 interface Props {
   entries: FoodEntry[];

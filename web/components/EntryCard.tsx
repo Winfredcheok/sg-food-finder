@@ -16,13 +16,30 @@ export default function EntryCard({ entry, reviewer, distanceKm }: Props) {
 
   return (
     <article className="flex overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
-      {/* Placeholder visual — swapped for a Google Places photo once the API key is set up */}
-      <div
-        className={`flex w-24 shrink-0 items-center justify-center bg-gradient-to-br text-4xl sm:w-28 ${style.gradient}`}
-        aria-hidden
-      >
-        {style.emoji}
-      </div>
+      {entry.photoUrl ? (
+        <div className="relative w-24 shrink-0 sm:w-28">
+          {/* Google Places photo, resolved & cached at curation time */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={entry.photoUrl}
+            alt={entry.restaurantName}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {entry.photoAttribution && (
+            <span className="absolute bottom-0 left-0 right-0 truncate bg-black/45 px-1 py-0.5 text-[9px] leading-tight text-white/90">
+              📷 {entry.photoAttribution}
+            </span>
+          )}
+        </div>
+      ) : (
+        <div
+          className={`flex w-24 shrink-0 items-center justify-center bg-gradient-to-br text-4xl sm:w-28 ${style.gradient}`}
+          aria-hidden
+        >
+          {style.emoji}
+        </div>
+      )}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-4">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">

@@ -13,6 +13,8 @@ export interface FoodEntry {
   reviewUrl: string;
   dateReviewed: string | null;
   googlePlaceId: string | null;
+  photoUrl?: string | null;
+  photoAttribution?: string | null;
 }
 
 export interface Reviewer {
