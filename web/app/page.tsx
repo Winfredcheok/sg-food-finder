@@ -19,7 +19,11 @@ export default function Home() {
       <FoodFinder entries={entries} reviewers={reviewers} />
       <footer className="mt-12 border-t border-neutral-200 pt-4 text-xs text-neutral-500 dark:border-neutral-800">
         All recommendations are curated from — and credited to — the original
-        reviewers. Click through to read or watch their full reviews.
+        reviewers; this site is not affiliated with or endorsed by them. Click
+        through to read or watch their full reviews. Photos from Google Maps.{" "}
+        <a href="/about" className="text-red-600 underline-offset-2 hover:underline">
+          About, attribution &amp; disclaimers →
+        </a>
       </footer>
     </main>
   );

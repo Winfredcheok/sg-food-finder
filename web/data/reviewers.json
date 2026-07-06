@@ -1,12 +1,59 @@
 [
-  { "id": "ieatishootipost", "name": "Dr Leslie Tay", "type": "blog", "site": "https://ieatishootipost.sg" },
-  { "id": "danielfooddiary", "name": "Daniel Ang", "type": "blog", "site": "https://danielfooddiary.com" },
-  { "id": "ladyironchef", "name": "Brad Lau", "type": "blog", "site": "https://www.ladyironchef.com" },
-  { "id": "misstamchiak", "name": "Maureen Ow", "type": "blog", "site": "https://www.misstamchiak.com" },
-  { "id": "sethlui", "name": "Seth Lui", "type": "blog", "site": "https://sethlui.com" },
-  { "id": "sgfoodonfoot", "name": "Derrick Tan", "type": "blog", "site": "https://www.sgfoodonfoot.com" },
-  { "id": "explodingbelly", "name": "Clara Chua", "type": "blog", "site": "https://explodingbelly.com" },
-  { "id": "eatbook", "name": "Eatbook", "type": "video", "site": "https://eatbook.sg", "youtubeChannel": "https://www.youtube.com/@eatbooksg" },
-  { "id": "alderic", "name": "Alderic Teo", "type": "video", "site": null, "youtubeChannel": "https://www.youtube.com/@Alderic." },
-  { "id": "getfed", "name": "Get Fed", "type": "video", "site": "https://www.overkill.sg", "youtubeChannel": null }
+  {
+    "id": "ieatishootipost",
+    "name": "Dr Leslie Tay",
+    "type": "blog",
+    "site": "https://ieatishootipost.sg"
+  },
+  {
+    "id": "danielfooddiary",
+    "name": "Daniel Ang",
+    "type": "blog",
+    "site": "https://danielfooddiary.com"
+  },
+  {
+    "id": "ladyironchef",
+    "name": "Brad Lau",
+    "type": "blog",
+    "site": "https://www.ladyironchef.com"
+  },
+  {
+    "id": "misstamchiak",
+    "name": "Maureen Ow",
+    "type": "blog",
+    "site": "https://www.misstamchiak.com"
+  },
+  {
+    "id": "sethlui",
+    "name": "Seth Lui",
+    "type": "blog",
+    "site": "https://sethlui.com"
+  },
+  {
+    "id": "sgfoodonfoot",
+    "name": "Derrick Tan",
+    "type": "blog",
+    "site": "https://www.sgfoodonfoot.com"
+  },
+  {
+    "id": "eatbook",
+    "name": "Eatbook",
+    "type": "video",
+    "site": "https://eatbook.sg",
+    "youtubeChannel": "https://www.youtube.com/@eatbooksg"
+  },
+  {
+    "id": "alderic",
+    "name": "Alderic Teo",
+    "type": "video",
+    "site": null,
+    "youtubeChannel": "https://www.youtube.com/@Alderic."
+  },
+  {
+    "id": "getfed",
+    "name": "Get Fed",
+    "type": "video",
+    "site": "https://www.overkill.sg",
+    "youtubeChannel": null
+  }
 ]
