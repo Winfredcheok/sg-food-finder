@@ -80,7 +80,10 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setStatus({ kind: "ok", msg: `Saved "${data.entry.restaurantName}" (id: ${data.entry.id}) — ${data.total} entries total.` });
+      setStatus({
+        kind: "ok",
+        msg: `Saved "${data.entry.restaurantName}" (id: ${data.entry.id}) — ${data.total} entries total. Places: ${data.placesStatus}`,
+      });
       setForm((f) => ({
         ...f,
         reviewUrl: "",

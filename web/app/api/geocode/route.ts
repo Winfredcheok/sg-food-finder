@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 // Geocodes a Singapore postal code (or free-text address) via OneMap.
 // OneMap is Singapore's official, free geocoding service — no API key needed.
 // Proxied server-side to avoid browser CORS issues and to keep the option of
 // swapping in Google Geocoding later without touching the client.
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "local";
+  if (!rateLimit(`geocode:${ip}`, 10, 60_000)) {
+    return NextResponse.json(
+      { error: "Too many lookups — try again in a minute" },
+      { status: 429 }
+    );
+  }
+
   const query = request.nextUrl.searchParams.get("q")?.trim();
   if (!query) {
     return NextResponse.json({ error: "Missing query" }, { status: 400 });

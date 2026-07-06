@@ -19,12 +19,53 @@ function slugify(s: string): string {
     .slice(0, 40);
 }
 
+// Best-effort Places enrichment at save time (same flow as the bulk
+// curation script): place ID + one photo URL with author attribution.
+// Photo URLs are resolved once here so visitors never trigger Places calls.
+async function enrichWithPlaces(entry: FoodEntry): Promise<string> {
+  const key = process.env.GOOGLE_SERVER_KEY;
+  if (!key) return "skipped (no GOOGLE_SERVER_KEY)";
+  try {
+    const searchRes = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": key,
+        "X-Goog-FieldMask": "places.id,places.displayName,places.photos",
+      },
+      body: JSON.stringify({
+        textQuery: `${entry.restaurantName}, ${entry.address}`,
+        regionCode: "SG",
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const search = await searchRes.json();
+    const place = search.places?.[0];
+    if (!place) return "no Places match — photo placeholder will be used";
+
+    entry.googlePlaceId = place.id;
+    const photo = place.photos?.[0];
+    if (photo) {
+      const mediaRes = await fetch(
+        `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=800&skipHttpRedirect=true&key=${key}`,
+        { signal: AbortSignal.timeout(10000) }
+      );
+      const media = await mediaRes.json();
+      entry.photoUrl = media.photoUri ?? null;
+      entry.photoAttribution = photo.authorAttributions?.[0]?.displayName ?? null;
+    }
+    return `matched "${place.displayName?.text}"${entry.photoUrl ? " with photo" : ", no photo"}`;
+  } catch {
+    return "Places lookup failed — entry saved without photo";
+  }
+}
+
 export async function POST(request: NextRequest) {
-  // Local-only: also reject anything arriving through a tunnel/proxy
-  // (forwarded requests carry x-forwarded-for / cf-connecting-ip headers).
-  const forwarded =
-    request.headers.get("x-forwarded-for") ?? request.headers.get("cf-connecting-ip");
-  if (process.env.VERCEL || forwarded) {
+  // Local-only: Next itself sets x-forwarded-for, so allow loopback client
+  // IPs and reject anything else (LAN devices, tunnels, proxies, Vercel).
+  const client = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "";
+  const isLoopback = ["", "127.0.0.1", "::1", "::ffff:127.0.0.1", "localhost"].includes(client);
+  if (process.env.VERCEL || !isLoopback || request.headers.get("cf-connecting-ip")) {
     return NextResponse.json({ error: "Admin tools are local-only" }, { status: 403 });
   }
 
@@ -59,7 +100,11 @@ export async function POST(request: NextRequest) {
     reviewUrl: body.reviewUrl,
     dateReviewed: body.dateReviewed || null,
     googlePlaceId: null,
+    photoUrl: null,
+    photoAttribution: null,
   };
+
+  const placesStatus = await enrichWithPlaces(entry);
 
   const updated = [...entries, entry];
   const json = JSON.stringify(updated, null, 2) + "\n";
@@ -70,5 +115,5 @@ export async function POST(request: NextRequest) {
     // seed copy is best-effort; the app data write is what matters
   }
 
-  return NextResponse.json({ ok: true, entry, total: updated.length });
+  return NextResponse.json({ ok: true, entry, total: updated.length, placesStatus });
 }
